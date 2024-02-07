@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "serialport.h"
+#include "localdb.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -48,5 +49,6 @@ private:
     uint64_t timeout_waiting_newfw = 0;
     uint64_t timeout_upgrade_fw = 0;
     Bootloader_State boot_state;
+    LocalDB *db;
 };
 #endif // MAINWINDOW_H

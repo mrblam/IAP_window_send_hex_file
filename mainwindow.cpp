@@ -5,11 +5,13 @@
 #include <QMessageBox>
 #include <QThread>
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     boot_state = Boot_State_Idle;
+    db = new LocalDB("database.db");
     ui->setupUi(this);
     this->setWindowTitle("Peco IAP");
     loadPort();
@@ -80,6 +82,7 @@ void MainWindow::on_btn_openCom_clicked()
     }else{
         QMessageBox::information(this,"Result","Port is opened");
         ui->btn_openCom->setEnabled(false);
+        db->insertToDb("Open Com");
     }
 }
 
@@ -89,6 +92,10 @@ void MainWindow::showDataReceived(QByteArray data)
     if(data.contains("error")){
         QMessageBox::critical(this,"Error","Firmware has problem,Exit upgrade!!");
         boot_state = Boot_State_Idle;
+        db->insertToDb("Upgrade Error");
+    }
+    if(data.contains("Success")){
+        db->insertToDb("Upgrade Success");
     }
 }
 
@@ -115,7 +122,7 @@ void MainWindow::processBootState()
         break;
     case Boot_State_Send_New_Firmware:
         if(systemTick < timeout_upgrade_fw){
-#if 1
+#if 0
             uint16_t line = 1;
             bool is_finish = true;
             QFile file(ui->path->text());
